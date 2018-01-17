@@ -170,12 +170,17 @@ public class InMemoryFs extends FileSystem {
 
   @Override
   public FileStatus[] listStatus(Path path) throws IOException {
-    InMemoryDirectory dir = findFileMustExist(path).asDirectory();
-    checkCanRead(dir);
-    dir.updateAccessTime();
-    List<FileStatus> stats = new ArrayList<>();
-    for (InMemoryFile f : dir.getFiles()) stats.add(f.stat());
-    return stats.toArray(new FileStatus[stats.size()]);
+    InMemoryFile file = findFileMustExist(path);
+    if (file.isDirectory()) {
+      InMemoryDirectory dir = file.asDirectory();
+      checkCanRead(dir);
+      dir.updateAccessTime();
+      List<FileStatus> stats = new ArrayList<>();
+      for (InMemoryFile f : dir.getFiles()) stats.add(f.stat());
+      return stats.toArray(new FileStatus[stats.size()]);
+    } else {
+      return new FileStatus[]{file.stat()};
+    }
   }
 
   @Override

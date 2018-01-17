@@ -612,6 +612,19 @@ public class TestMemFsUnit {
     Assert.assertTrue(memFs instanceof InMemoryFs);
   }
 
+  @Test
+  public void listStatusOnFile() throws IOException {
+    final String line = "abc";
+    FSDataOutputStream out = fs.create(new Path("/alphabet"));
+    out.writeBytes(line);
+    out.close();
+
+    FileStatus stats[] = fs.listStatus(new Path("/alphabet"));
+    Assert.assertEquals(1, stats.length);
+    Assert.assertEquals("alphabet", stats[0].getPath().getName());
+
+  }
+
   private void sortStats(FileStatus[] stats) {
     Arrays.sort(stats, Comparator.comparing(o -> o.getPath().getName()));
   }
